@@ -27,7 +27,7 @@ namespace TCPtest
     /// </summary>
     /// 
 
-        //サーバー作って通信どんな感じになるか確認
+    //サーバー作って通信どんな感じになるか確認
 
     public sealed partial class MainPage : Page
     {
@@ -43,18 +43,24 @@ namespace TCPtest
         Data1 data1;
 
         TCPCONNECTION tCPCONNECTION;
+        TCPClientManager tcpClientManger;
+        TcpClient tcpClient;
+
         public MainPage()
         {
             this.InitializeComponent();
             //localHost = NetworkInformation.GetHostNames().Where(q => q.Type == HostNameType.Ipv4).First();
             //text.Text = "hello";
 
+
             data1 = new Data1();
             this.DataContext = data1;
             tCPCONNECTION = new TCPCONNECTION();
+            tcpClientManger = new TCPClientManager();
+            tcpClient = new TcpClient();
         }
 
-        
+
 
         private async void btnClientConnection_Click(object sender, RoutedEventArgs e)
         {
@@ -66,7 +72,10 @@ namespace TCPtest
 
             data1.status = "aiueo";
 
-            tCPCONNECTION.start(data1,this);
+            tCPCONNECTION.start(data1, this);
+            //tcpClientManger.ConnectClient();
+            //tcpClient.Connect();
+
         }
 
         private async void btnClientRecv_Click(object sender, RoutedEventArgs e)
@@ -83,10 +92,10 @@ namespace TCPtest
             //Debug.WriteLine("client receive {0}", str);
             //text.Text = "receive : " +  str;
             tCPCONNECTION.send("start");
-
+            //tcpClientManger.SendMessage("start");
         }
 
-       
+
 
         private async void btnClientSend_Click(object sender, RoutedEventArgs e)
         {
@@ -103,12 +112,14 @@ namespace TCPtest
 
             string s = textBox1.Text;
             tCPCONNECTION.send(s);
-            
-        }
+            //tcpClientManger.SendMessage(s);
 
+        }
+        
         public async System.Threading.Tasks.Task SetTextAsync(String msg)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
                 //UI code here
                 text.Text = msg;
             });
@@ -119,6 +130,7 @@ namespace TCPtest
             //serverSocket.Dispose();
             //clientSocket.Dispose();
             tCPCONNECTION.send("exit");
+            //tcpClientManger.
         }
     }
 }

@@ -12,16 +12,29 @@ namespace TCPtest
     class TCPCONNECTION
     {
         Data1 data1;
-        Socket socket;
+        System.Net.Sockets.Socket socket;
         bool endRead;
         Task tasks;
+        List<int> timeList;
+        List<int> sensor1List;
+        List<int> sensor2List;
+        List<int> sensor3List;
+        List<int> sensor4List;
+
+        private bool startRecord;
+
+        private int count;
+
+
         public void start(Data1 data1_,MainPage page)
         {
             data1 = data1_;
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket = new System.Net.Sockets.Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // ローカルホストの8081ポートのサーバへ接続
-            socket.Connect("localhost", 10001);
+            socket.Connect("192.168.10.131", 10001);
             Debug.WriteLine("HELLO");
+            Debug.WriteLine("tcp connection");
+
             data1.status = "HELLO";
             endRead = false; // 読み込み用スレッドの停止用
 
@@ -45,7 +58,47 @@ namespace TCPtest
                             Debug.Write(recStr);
                             Debug.Write("> ");
                             //data1.status = recStr;
-                            await page.SetTextAsync(recStr);
+
+                            String[] strings = recStr.Split(',');
+                            if (!startRecord)
+                            {
+                                for (int i = 0; i < strings.Length; i++)
+                                {
+                                    //                                    Debug.Log(i + " : " + strings[i]);
+
+                                }
+                                foreach (string s in strings)
+                                {
+                                    if (s.Contains("ead"))
+                                    {
+                                        startRecord = true;
+                                        //                                        Debug.Log("start");
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                String[] separator = { "eadffff", "ead2222" };
+                                String[] lineSplit = recStr.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var line in lineSplit)
+                                {
+                                   // Debug.Log(line);
+                                    //await page.SetTextAsync(line);
+
+                                    String[] elements = line.Split(',');
+                                    //foreach (string element in elements)
+                                    //{
+                                    //   // Debug.Log(element);
+                                    //}
+                                    //count++;
+                                    //timeList.Add(Int32.Parse(elements[1]));
+                                    //sensor1List.Add(Int32.Parse(elements[2]));
+                                    //sensor2List.Add(Int32.Parse(elements[3]));
+                                    //sensor3List.Add(Int32.Parse(elements[4]));
+                                    //sensor4List.Add(Int32.Parse(elements[5]));
+                                }
+                            }
                         }
                     }
                     // SLEEP
